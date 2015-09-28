@@ -104,7 +104,6 @@ $(document).on('ready', function(){
         } else {
             /* perform auth */
             window.location=instagram.authUrl;
-            return;
         }
         return;
     }
