@@ -15,7 +15,7 @@ cd "$BASEDIR"
 case $OS in
     Linux)
         URL=""
-        
+
         case $ARCH in
             x86_64)
                 URL="$NWJS_64_LINUX_URL"
@@ -24,14 +24,14 @@ case $OS in
                 URL="$NWJS_32_LINUX_URL"
                 ;;
             *)
-                echo "Unsuported ARCH: '$ARCH'" && exit 1   
+                echo "Unsuported ARCH: '$ARCH'" && exit 1
         esac
-        
-        if [ -d "$NWJSDIR" ]; then 
+
+        if [ -d "$NWJSDIR" ]; then
             rm -rf "$NWJSDIR" || exit 1
         fi
         mkdir -p "$NWJSDIR" || exit 1
-        
+
         echo "Downloading NW.js from '$URL'..."
         curl --progress-bar "$URL" | tar -xzf - -C "$NWJSDIR" --strip-components=1 || exit 1
         echo "Done"
@@ -46,8 +46,7 @@ echo "Installing javascript dependecies via bower..."
 bower install || exit 1
 echo "Done"
 
-echo "In order to run this project with NS.js, do: ${BASEDIR}/run.sh" 
-echo "In order to run this project with a browser, do: ${BASEDIR}/serve.sh"# install tsd if available
+# install tsd if available
 if which tsd >/dev/null; then
     tsd install
 fi

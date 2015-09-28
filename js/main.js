@@ -88,6 +88,7 @@ var PageTransition = (function ($) {
 var instagram;
 var appuri;
 var pt;
+
 $(document).on('ready', function(){
     pt = new PageTransition("#container")
     appuri = URI(document.URL);
@@ -171,6 +172,7 @@ $(document).on('ready', function(){
             });
     }
 })
+
 
 
 /*
