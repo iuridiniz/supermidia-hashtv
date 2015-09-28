@@ -1,3 +1,4 @@
+/* global loadImage */
 /* global Instajam */
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 
@@ -36,7 +37,7 @@ var PageTransition = (function ($) {
         if (this.isAnimating) {
             return false;
         }
-        if (this.$pages.size() == 0) {
+        if (this.$pages.length == 0) {
             return false;
         }
         var $currPage;
@@ -50,7 +51,7 @@ var PageTransition = (function ($) {
         }
         this.isAnimating = true;
 
-        this.current = ++this.current>=this.$pages.size()?0:this.current;
+        this.current = ++this.current>=this.$pages.length?0:this.current;
 
         var $nextPage = this.$pages.eq(this.current).addClass('pt-page-current');
 
@@ -81,6 +82,60 @@ var PageTransition = (function ($) {
     }
     return PageTransition;
 })(jQuery);
+
+/* request tags */
+var getPhotosUrls = function(tag, onSuccess, onError) {
+    instagram.tag.media(tag, function(response) {
+        if (! response.data) {
+            if (onError && typeof(onError) === 'function') {
+                //console.log("No data: ", response);
+                onError(response.meta);
+            }
+            return;
+        }
+        var urls = [];
+
+        $.each(response.data, function(index, post) {
+            if (!(post.type == 'image')) {
+                return;
+            }
+            if (post.images && post.images.standard_resolution) {
+                var url = post.images.standard_resolution.url;
+                if (url) {
+                    urls.push(url);
+                }
+            }
+        });
+        if (onSuccess && typeof(onSuccess) === 'function') {
+            onSuccess(urls);
+        }
+    });
+};
+
+/* TODO: refactoring this */
+var loadNewPics = function (urls, onLoadOne, onLoadAll) {
+    var missing = urls.length;
+    var imgs = [];
+    $.each(urls, function(index, url) {
+        /*var page = $("<div>").addClass('pt-page');*/
+        loadImage(url, function(img) {
+            missing--;
+            //console.log("Got image " + (data.length - missing) + "/" + data.length);
+            if (onLoadOne && typeof(onLoadOne) === 'function') {
+                onLoadOne(url, img, img.type, urls.length - missing, urls.length);
+            }
+            if (img.type != 'error') {
+                imgs.push(img);
+            }
+            //$container.append($(img).addClass('pt-page'));
+            if (missing == 0) {
+                if (onLoadAll && typeof(onLoadAll) === 'function') {
+                    onLoadAll(imgs)
+                }
+            }
+        })
+    });
+};
 
 /* make they global */
 var instagram;
@@ -115,7 +170,7 @@ $(document).on('ready', function(){
         $("#toolbar").show();
         $('body').css('cursor', 'auto');
         window.clearTimeout(mouse_timeout);
-        mouse_timeout = window.setInterval(function() {
+        mouse_timeout = window.setTimeout(function() {
             $("#toolbar").hide();
             $('body').css('cursor', 'none');
         }, 2000)
@@ -167,7 +222,99 @@ $(document).on('ready', function(){
                 }
             });
     }
-})
+
+    var updatePhotos = function(tag, onDone, onError) {
+        getPhotosUrls(tag, function(urls) {
+            //console.log("success getPhotoUrls", data);
+            var $progressBarContainer = $("#progress-bar-container");
+            var $progressBar= $("#progress-bar");
+
+            $progressBar.css('width', '0%');
+            $progressBar.text("0/" + urls.length + " (0%)");
+
+            $progressBarContainer.show();
+
+            loadNewPics(urls, function(url, img, code, index, total) {
+                /* loaded one, update progress bar */
+                if (code === 'error') {
+                    console.error("Error while requesting " + url);
+                }
+                var percent = '0%';
+
+                if (total > 0) {
+                    percent = Math.ceil((index/total) * 100) + "%";
+                }
+                $progressBar.css('width', percent);
+                $progressBar.text(index + "/" + total + " (" + percent + ")");
+
+            }, function(imgs) {
+                /* all loaded, update container */
+                var saved_classes = pt.$container.attr('class');
+                pt.$container.addClass('pt-page-rotateSlideOut');
+                var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+                pt.$container.one(events, function() {
+                    pt.$container.empty();
+
+                    $.each(imgs, function(index, img) {
+                        var $page = $("<div>").addClass('pt-page');
+                        var $img = $(img).addClass("instagram");
+                        $img.appendTo($page);
+                        $page.appendTo(pt.$container);
+                    });
+
+                    pt.$container.attr('class', saved_classes);
+                    $progressBarContainer.hide();
+                    pt.reload();
+
+                    if (onDone && typeof(onDone) === "function") {
+                        onDone();
+                    }
+                });
+
+            });
+
+        }, function (response) {
+            //console.log("error getPhotoUrls", data);
+            if (response.code === 400) {
+                /* Unauthorized */
+                //instagram.deauthenticate();
+                //location.reload();
+            }
+            if (onError && typeof(onError) === "function") {
+                onError(response.code);
+            }
+        });
+    }
+
+    var tag = "snow";
+    /* FIXME: How can I do something better ? */
+    var updatePhotosLoop = function() {
+        var t;
+        var changePhotosLoop = function() {
+            console.log("Request to next");
+            //debugger;
+            pt.next();
+            t = window.setTimeout(changePhotosLoop, 5000);
+        };
+
+        updatePhotos(tag, function() {
+            window.setTimeout(updatePhotosLoop, 2 * 100 * 1000);
+            window.clearTimeout(t);
+            changePhotosLoop();
+        }, function(code) {
+            if (code === 400) {
+                /* Unauthorized */
+                //instagram.deauthenticate();
+                //location.reload();
+            }
+            window.setTimeout(updatePhotosLoop, 2 * 100 * 1000);
+            window.clearTimeout(t);
+            changePhotosLoop();
+        });
+    };
+    updatePhotosLoop();
+
+});
 
 
 

@@ -28,13 +28,37 @@
         z-index: 99;
         display: none;
       }
-      #fullscreen {
+
+      #progress-bar-container {
+        background-color: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        z-index: 10;
+        opacity: 0.7;
+        width: 100%;
         display: none;
+      }
+      #container {
+        left: 50%;
+        width: initial;
+        transform: translate(-50%, 0%);
+      }
+      img.instagram {
+        width: initial;
+        height: 100vh;
+        /* align-content: center; */
+        margin-left: 50%;
+        /* margin-right: auto; */
+        transform: translate(-50%,0);
       }
     </style>
   </head>
   <body>
     <div id="app" class="container">
+      <div id="progress-bar-container" class="progress">
+        <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+          60%
+        </div>
+      </div>
       <div id="toolbar">
         <button id="settings" type="button" class='btn btn-default'>
           <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
@@ -44,14 +68,11 @@
         </button>
       </div>
       <div id="container" class="pt-perspective">
-        <div class="pt-page" style="background: Khaki">
-          <h1>Hello</h1>
+        <div class="pt-page pt-page-current" style="/*background: Khaki*/">
+          <img class="instagram" src="https://scontent.cdninstagram.com/hphotos-xpf1/t51.2885-15/s640x640/sh0.08/e35/10549889_547524558727992_585793704_n.jpg" width="640" height="640"/>
         </div>
-        <div class="pt-page" style="background: GreenYellow">
-          <h1>World</h1>
-        </div>
-        <div class="pt-page" style="background: Aqua">
-          <h1>Honey</h1>
+        <div class="pt-page" style="/*background: GreenYellow*/">
+          <img class="instagram" src="https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s640x640/sh0.08/e35/11939680_1191530524196358_425367096_n.jpg" width="640" height="640">/
         </div>
       </div>
     </div>
@@ -63,7 +84,8 @@
   <script src="/bower_components/instajam/dist/instajam.js"></script>
   <script src="/bower_components/uri.js/src/URI.min.js"></script>
   <!-- /* uncomment to live reload */ -->
-  <!-- <script src="http://livejs.com/live.js#html,css,js"></script> -->
+  <!--<script src="http://livejs.com/live.js#html,css,js"></script>-->
+
   <!-- my code -->
   <script src="/js/main.js"></script>
 </html>
