@@ -1,3 +1,4 @@
+/* global Instajam */
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 
 var PageTransition = (function ($) {
@@ -83,10 +84,34 @@ var PageTransition = (function ($) {
     return PageTransition;
 })(jQuery);
 
-var pt = new PageTransition("#container")
-window.setInterval(function() {
-    pt.next();
-}, 1000);
+/* make they global */
+var instagram;
+var appuri;
+var pt;
+$(document).on('ready', function(){
+    pt = new PageTransition("#container")
+    appuri = URI(document.URL);
+    instagram = Instajam.init({
+        clientId: 'e0c943c7ee9c444db995a8688979e078',
+        redirectUri: appuri.toString(),
+        scope: ['basic']
+    });
+
+    if (! instagram.authenticated) {
+        console.log("Not authorized");
+        var qs = appuri.query(true);
+        if (qs.error) {
+            console.log("User doesn't authorized");
+            return;
+        } else {
+            /* perform auth */
+            window.location=instagram.authUrl;
+            return;
+        }
+        console.log("Not authorized");
+    }
+    console.log("Authorized");
+})
 
 
 /*

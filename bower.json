@@ -21,6 +21,7 @@
     "jquery": "~2.1.4",
     "instajam": "~2.0.3",
     "bootstrap": "~3.3.5",
-    "animate.css": "~3.4.0"
+    "animate.css": "~3.4.0",
+    "uri.js": "~1.16.1"
   }
 }
