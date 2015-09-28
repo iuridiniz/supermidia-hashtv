@@ -38,34 +38,39 @@ var PageTransition = (function ($) {
         if (this.$pages.size() == 0) {
             return false;
         }
-        if (this.current < 0) {
-            /* TODO: IN anim */
-            return false;
-        }
-        this.isAnimating = true;
-        var $currPage = this.$pages.eq(this.current);
-
-        this.current = ++this.current>=this.$pages.size()?0:this.current;
-
+        var $currPage;
         var endNextPage = false;
         var endCurrPage = false;
+
+        if (this.current >= 0) {
+            $currPage = this.$pages.eq(this.current);
+        } else {
+            endCurrPage = true;
+        }
+        this.isAnimating = true;
+
+        this.current = ++this.current>=this.$pages.size()?0:this.current;
 
         var $nextPage = this.$pages.eq(this.current).addClass('pt-page-current');
 
         var reset = function() {
             self.isAnimating = false;
-            $currPage.attr('class', $currPage.data('original-class-list'));
+            if ($currPage) {
+                $currPage.attr('class', $currPage.data('original-class-list'));
+            }
             $nextPage.attr('class', $nextPage.data('original-class-list') + ' pt-page-current');
         }
 
         var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-        $currPage.addClass(outClass).one(events, function(event) {
-            $(this).off(events);
-            endCurrPage = true;
-            if (endNextPage) {
-                reset();
-            }
-        });
+        if ($currPage) {
+            $currPage.addClass(outClass).one(events, function(event) {
+                $(this).off(events);
+                endCurrPage = true;
+                if (endNextPage) {
+                    reset();
+                }
+            });
+        }
         $nextPage.addClass(inClass).one(events, function(event) {
             $(this).off(events);
             endNextPage = true;
