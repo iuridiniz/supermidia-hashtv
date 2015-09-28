@@ -65,7 +65,6 @@ var PageTransition = (function ($) {
         var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
         if ($currPage) {
             $currPage.addClass(outClass).one(events, function(event) {
-                $(this).off(events);
                 endCurrPage = true;
                 if (endNextPage) {
                     reset();
@@ -73,7 +72,6 @@ var PageTransition = (function ($) {
             });
         }
         $nextPage.addClass(inClass).one(events, function(event) {
-            $(this).off(events);
             endNextPage = true;
             if (endCurrPage) {
                 reset();
