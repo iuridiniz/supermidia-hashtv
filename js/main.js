@@ -111,6 +111,65 @@ $(document).on('ready', function(){
         console.log("Not authorized");
     }
     console.log("Authorized");
+
+    /* set mouse behavior */
+    var mouse_timeout;
+    $('body').on('mousemove', function() {
+        $("#toolbar").show();
+        $('body').css('cursor', 'auto');
+        window.clearTimeout(mouse_timeout);
+        mouse_timeout = window.setInterval(function() {
+            $("#toolbar").hide();
+            $('body').css('cursor', 'none');
+        }, 2000)
+    }).on('mouseout', function() {
+        $("#toolbar").hide();
+    });
+
+    /* fullscreen */
+    if (document.fullscreenEnabled ||
+        document.webkitFullscreenEnabled ||
+        document.mozFullScreenEnabled ||
+        document.msFullscreenEnabled) {
+
+        $("#fullscreen")
+            .show()
+            .on("click", function() {
+                /* is in fullscreen */
+                if (document.fullscreenElement ||
+                    document.webkitFullscreenElement ||
+                    document.mozFullScreenElement ||
+                    document.msFullscreenElement
+                ){
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        document.mozCancelFullScreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    } else {
+                        console.error("Unable to exit fullscreen");
+                    }
+                } else {
+                    /* enter fullscreen */
+                    var i = $("#app")[0];
+                    // go full-screen
+                    if (i.requestFullscreen) {
+                        i.requestFullscreen();
+                    } else if (i.webkitRequestFullscreen) {
+                        i.webkitRequestFullscreen();
+                    } else if (i.mozRequestFullScreen) {
+                        i.mozRequestFullScreen();
+                    } else if (i.msRequestFullscreen) {
+                        i.msRequestFullscreen();
+                    } else {
+                        console.error("Unable to enter in fullscreen");
+                    }
+                }
+            });
+    }
 })
 
 
