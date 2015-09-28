@@ -1,72 +1,89 @@
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 
-var container = $("#pt-main");
+var PageTransition = (function ($) {
+    'use strict';
 
-var $pages = container.children('.pt-page');
-var current = -1;
-$pages.each(function(i) {
-    var $page = $(this);
-    if ($page.hasClass("pt-page-current")) {
-        current = i;
-    }
-    $page.data('original-class-list',
-        $page.attr('class').replace(/\bpt-page-current\b/,""));
-});
+    /* effect */
+    var outClass = 'pt-page-flipOutRight';
+    var inClass = 'pt-page-flipInLeft pt-page-delay500';
 
-var isAnimating = false;
-function next() {
-    if (isAnimating) {
-        return false;
-    }
-    if ($pages.size() == 0) {
-        return false;
-    }
-    if (current < 0) {
-        /* TODO: IN anim */
-        return false;
-    }
-    isAnimating = true;
-    var $currPage = $pages.eq(current);
-
-    current = ++current>=$pages.size()?0:current;
-
-    var outClass;
-    var inClass;
-
-    outClass = 'pt-page-flipOutRight';
-    inClass = 'pt-page-flipInLeft pt-page-delay500';
-
-    var endNextPage = false;
-    var endCurrPage = false;
-
-    var $nextPage = $pages.eq(current).addClass('pt-page-current');
-
-    var reset = function() {
-        isAnimating = false;
-        $currPage.attr('class', $currPage.data('original-class-list'));
-        $nextPage.attr('class', $nextPage.data('original-class-list') + ' pt-page-current');
+    var PageTransition = function(container) {
+        this.$container = $(container);
+        this.$pages = [];
+        this.current = -1;
+        this.isAnimating = false;
+        this.reload();
     }
 
-    var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-    $currPage.addClass(outClass).one(events, function(event) {
-        $(this).off(events);
-        endCurrPage = true;
-        if (endNextPage) {
-            reset();
+    PageTransition.prototype.reload = function (){
+        var self = this;
+        this.$pages = this.$container.children('.pt-page');
+        this.current = -1;
+        this.$pages.each(function(i) {
+            var $page = $(this);
+            if ($page.hasClass("pt-page-current")) {
+                self.current = i;
+            }
+            $page.data('original-class-list',
+                $page.attr('class').replace(/\bpt-page-current\b/,""));
+        });
+
+    }
+
+    PageTransition.prototype.next = function() {
+        var self = this;
+        if (this.isAnimating) {
+            return false;
         }
-    });
-    $nextPage.addClass(inClass).one(events, function(event) {
-        $(this).off(events);
-        endNextPage = true;
-        if (endCurrPage) {
-            reset();
+        if (this.$pages.size() == 0) {
+            return false;
         }
-    });
-    return true;
-}
+        if (this.current < 0) {
+            /* TODO: IN anim */
+            return false;
+        }
+        this.isAnimating = true;
+        var $currPage = this.$pages.eq(this.current);
+
+        this.current = ++this.current>=this.$pages.size()?0:this.current;
+
+        var endNextPage = false;
+        var endCurrPage = false;
+
+        var $nextPage = this.$pages.eq(this.current).addClass('pt-page-current');
+
+        var reset = function() {
+            self.isAnimating = false;
+            $currPage.attr('class', $currPage.data('original-class-list'));
+            $nextPage.attr('class', $nextPage.data('original-class-list') + ' pt-page-current');
+        }
+
+        var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+        $currPage.addClass(outClass).one(events, function(event) {
+            $(this).off(events);
+            endCurrPage = true;
+            if (endNextPage) {
+                reset();
+            }
+        });
+        $nextPage.addClass(inClass).one(events, function(event) {
+            $(this).off(events);
+            endNextPage = true;
+            if (endCurrPage) {
+                reset();
+            }
+        });
+        return true;
+    }
+    return PageTransition;
+})(jQuery);
+
+var pt = new PageTransition("#container")
 window.setInterval(function() {
-    next();
+    pt.next();
 }, 1000);
+
+
 /*
 Animations reference
 
