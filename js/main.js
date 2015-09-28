@@ -101,13 +101,12 @@ $(document).on('ready', function(){
         var qs = appuri.query(true);
         if (qs.error) {
             console.log("User doesn't authorized");
-            return;
         } else {
             /* perform auth */
             window.location=instagram.authUrl;
             return;
         }
-        console.log("Not authorized");
+        return;
     }
     console.log("Authorized");
 
