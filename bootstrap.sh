@@ -47,4 +47,10 @@ bower install || exit 1
 echo "Done"
 
 echo "In order to run this project with NS.js, do: ${BASEDIR}/run.sh" 
-echo "In order to run this project with a browser, do: ${BASEDIR}/serve.sh"
+echo "In order to run this project with a browser, do: ${BASEDIR}/serve.sh"# install tsd if available
+if which tsd >/dev/null; then
+    tsd install
+fi
+
+echo "In order to run this project with NS.js, do: ${BASEDIR}/run.sh"
+echo "In order to run this project with a browser, do: ${BASEDIR}/serve.sh (need twistd)"
