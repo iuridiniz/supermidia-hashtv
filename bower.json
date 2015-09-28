@@ -1,0 +1,26 @@
+{
+  "name": "hashmediabr",
+  "version": "0.0.1",
+  "authors": [
+    "Iuri Diniz <iuridiniz@gmail.com>"
+  ],
+  "description": "Show instagram HashTags over TVs",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "http://supermidia.tv",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "instajam": "~2.0.3",
+    "bootstrap": "~3.3.5",
+    "animate.css": "~3.4.0"
+  }
+}
