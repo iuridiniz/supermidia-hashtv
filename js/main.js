@@ -144,6 +144,7 @@ var loadNewPics = function (urls, onLoadOne, onLoadAll) {
 var instagram;
 var appuri;
 var pt;
+var interval;
 
 $(document).on('ready', function(){
     pt = new PageTransition("#container")
@@ -168,18 +169,15 @@ $(document).on('ready', function(){
     console.log("Authorized");
 
     /* set mouse behavior */
-    var mouse_timeout;
     $('body').on('mousemove', function() {
         $("#toolbar").show();
         $('body').css('cursor', 'auto');
-        window.clearTimeout(mouse_timeout);
-        mouse_timeout = window.setTimeout(function() {
-            $("#toolbar").hide();
-            $('body').css('cursor', 'none');
-        }, 2000)
     }).on('mouseout', function() {
         $("#toolbar").hide();
-    });
+    }).on('mousemove', $.debounceLast(2000, function() {
+        $("#toolbar").hide();
+        $('body').css('cursor', 'none');
+    }));
 
     /* fullscreen */
     if (document.fullscreenEnabled ||
@@ -292,33 +290,29 @@ $(document).on('ready', function(){
     }
 
     var tag = "snow";
-    /* FIXME: How can I do something better ? */
-    var updatePhotosLoop = function() {
-        var t;
-        var changePhotosLoop = function() {
-            console.log("Request to next");
-            //debugger;
-            pt.next();
-            t = window.setTimeout(changePhotosLoop, 5000);
-        };
 
+    var changePhotosLoop = $.throttle(5 * 1000, function() {
+        pt.next();
+        //console.log("next");
+    });
+
+    var updatePhotosLoop = $.throttle(5 * 100 * 1000, function() {
         updatePhotos(tag, function() {
-            window.setTimeout(updatePhotosLoop, 2 * 100 * 1000);
-            window.clearTimeout(t);
-            changePhotosLoop();
+            //debugger;
+            //console.log("Photos updated");
         }, function(code) {
+            console.warn("Error while updating photos: " + code);
             if (code === 400) {
                 /* Unauthorized */
                 //instagram.deauthenticate();
                 //location.reload();
             }
-            window.setTimeout(updatePhotosLoop, 2 * 100 * 1000);
-            window.clearTimeout(t);
-            changePhotosLoop();
         });
-    };
-    updatePhotosLoop();
-
+    });
+    interval = window.setInterval(function() {
+        updatePhotosLoop();
+        changePhotosLoop();
+    }, 1000);
 });
 
 

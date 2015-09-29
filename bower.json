@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "jquery": "~2.1.4",
+    "jquery.timer-tools": "~0.1.0",
     "instajam": "~2.0.3",
     "bootstrap": "~3.3.5",
     "animate.css": "~3.4.0",
