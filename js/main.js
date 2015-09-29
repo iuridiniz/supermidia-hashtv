@@ -251,7 +251,7 @@ $(document).on('ready', function(){
             }, function(imgs) {
                 /* all loaded, update container */
                 var saved_classes = pt.$container.attr('class');
-                pt.$container.addClass('pt-page-rotateSlideOut');
+                pt.$container.addClass('animated rotateOut');
                 var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
                 pt.$container.one(events, function() {
                     /* some browsers send two events like chrome (webkitAnimationEnd and animationend) */
