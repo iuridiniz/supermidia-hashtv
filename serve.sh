@@ -2,15 +2,20 @@
 
 BASEDIR=$( (cd -P "`dirname "$0"`" && pwd) )
 
-freeport=$(sysctl -b net.ipv4.ip_local_port_range | awk '{print $1}');
-while (netstat -atn | grep -q :$freeport); do
-    freeport=$(expr $freeport + 1);
-done;
+PORT=8082
 
-myip=$(ip route get 8.8.8.8 2>/dev/null| awk 'NR==1 {print $NF}')
-url="http://${myip:=127.0.0.1}:$freeport/html"
+KERNEL=$(uname -s)
 
-(sleep 2 && xdg-open "$url") &
+if [ "$KERNEL" = "Darwin" ]; then
+    OPEN=$(which open)
+elif [ "$KERNEL" = "Linux" ]; then
+    OPEN=$(which xdg-open)
+fi
+
+export url="http://www.127.0.0.1.xip.io:$PORT/html"
+if [ x"$OPEN" != x"" ]; then
+    (sleep 2; $OPEN $url)&
+fi
 
 echo "*************************************************************************"
 echo "URL to this app is $url "
@@ -20,5 +25,5 @@ exec twistd \
         --pidfile /tmp/twistd-web-$RANDOM.pid \
         --logfile - \
         -n web \
-        --port ${freeport} \
+        --port ${PORT} \
         --path "${BASEDIR}"
