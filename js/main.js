@@ -12,8 +12,6 @@ var PageTransition = (function ($) {
     var PageTransition = function(container) {
         this.$container = $(container);
         this.$pages = [];
-        this.current = -1;
-        this.isAnimating = false;
         this.reload();
     }
 
@@ -21,6 +19,7 @@ var PageTransition = (function ($) {
         var self = this;
         this.$pages = this.$container.children('.pt-page');
         this.current = -1;
+        this.isAnimating = false;
         this.$pages.each(function(i) {
             var $page = $(this);
             if ($page.hasClass("pt-page-current")) {
@@ -66,6 +65,8 @@ var PageTransition = (function ($) {
         var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
         if ($currPage) {
             $currPage.addClass(outClass).one(events, function(event) {
+                /* some browsers send two events like chrome (webkitAnimationEnd and animationend) */
+                $(this).off(events);
                 endCurrPage = true;
                 if (endNextPage) {
                     reset();
@@ -73,6 +74,8 @@ var PageTransition = (function ($) {
             });
         }
         $nextPage.addClass(inClass).one(events, function(event) {
+            /* some browsers send two events like chrome (webkitAnimationEnd and animationend) */
+            $(this).off(events);
             endNextPage = true;
             if (endCurrPage) {
                 reset();
@@ -253,6 +256,8 @@ $(document).on('ready', function(){
                 pt.$container.addClass('pt-page-rotateSlideOut');
                 var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
                 pt.$container.one(events, function() {
+                    /* some browsers send two events like chrome (webkitAnimationEnd and animationend) */
+                    $(this).off(events);
                     pt.$container.empty();
 
                     $.each(imgs, function(index, img) {
