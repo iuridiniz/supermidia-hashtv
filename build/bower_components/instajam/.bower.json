@@ -1,0 +1,17 @@
+{
+  "name": "Instajam",
+  "version": "2.0.3",
+  "main": [
+    "./dist/instajam.min.js"
+  ],
+  "homepage": "https://github.com/mikefowler/instajam",
+  "_release": "2.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.0.3",
+    "commit": "a5f30e58162eb23c776ee958888c69aa89c9be25"
+  },
+  "_source": "git://github.com/mikefowler/instajam.git",
+  "_target": "~2.0.3",
+  "_originalSource": "instajam"
+}
