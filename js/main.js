@@ -140,6 +140,10 @@ var loadNewPics = function (urls, onLoadOne, onLoadAll) {
     });
 };
 
+var DEFAULT_HASHTAG="HashMediaBR";
+var DEFAULT_UPDATE_MS=5 * 100 * 1000;
+var DEFAULT_CHANGE_MS=5 * 1000;
+
 /* make they global */
 var instagram;
 var appuri;
@@ -154,19 +158,6 @@ $(document).on('ready', function(){
         redirectUri: appuri.toString(),
         scope: ['basic']
     });
-
-    if (! instagram.authenticated) {
-        console.log("Not authorized");
-        var qs = appuri.query(true);
-        if (qs.error) {
-            console.log("User doesn't authorized");
-        } else {
-            /* perform auth */
-            window.location=instagram.authUrl;
-        }
-        return;
-    }
-    console.log("Authorized");
 
     /* set mouse behavior */
     $('body').on('mousemove', function() {
@@ -223,6 +214,68 @@ $(document).on('ready', function(){
                 }
             });
     }
+
+    /* modal settings */
+    $("#settings-dialog").on("show.bs.modal", function() {
+        $("#hashtag")
+            .attr("value", localStorage.getItem("hashtag"))
+            .attr("placeholder", DEFAULT_HASHTAG);
+        $("#update-photos-ms")
+            .attr("value", localStorage.getItem("update-photos-ms"))
+            .attr("placeholder", DEFAULT_UPDATE_MS);
+        $("#change-photos-ms")
+            .attr("value", localStorage.getItem("change-photos-ms"))
+            .attr("placeholder", DEFAULT_CHANGE_MS);
+        if (!instagram.authenticated) {
+            console.log("Not authorized");
+            var qs = appuri.query(true);
+            if (qs.error) {
+                console.log("User doesn't authorized us");
+            }
+            $("#alert-not-auth").alert();
+        } else {
+            $("#alert-not-auth").hide();
+        }
+    });
+
+    /* config authorizes button */
+    $("#auth-button").on('click', function(){
+         window.location=instagram.authUrl;
+    });
+    /* config deauthorize button */
+    $("#deauth-button").on('click', function(){
+         instagram.deauthenticate();
+    });
+
+    /* config reset button */
+    $("#settings-dialog #reset").on('click', function() {
+        localStorage.removeItem("hashtag");
+        localStorage.removeItem("update-photos-ms");
+        localStorage.removeItem("change-photos-ms");
+        location.reload();
+    });
+
+    $("#settings-dialog #save").on('click', function() {
+        if ($("#hashtag").val()) {
+            localStorage.setItem("hashtag", $("#hashtag").val());
+        } else {
+            localStorage.removeItem("hashtag");
+        }
+
+        if ($("#update-photos-ms").val()) {
+            localStorage.setItem("update-photos-ms", $("#update-photos-ms").val());
+        } else {
+            localStorage.removeItem("update-photos-ms");
+        }
+
+        if ($("#change-photos-ms").val()) {
+            localStorage.setItem("change-photos-ms", $("#change-photos-ms").val());
+        } else {
+            localStorage.removeItem("change-photos-ms");
+        }
+
+        location.reload();
+    });
 
     var updatePhotos = function(tag, onDone, onError) {
         getPhotosUrls(tag, function(urls) {
@@ -289,14 +342,16 @@ $(document).on('ready', function(){
         });
     }
 
-    var tag = "snow";
+    var tag = localStorage.getItem("hashtag") || DEFAULT_HASHTAG;
+    var change_photos_ms = Number(localStorage.getItem("change-photos-ms")) || DEFAULT_CHANGE_MS;
+    var update_photos_ms = Number(localStorage.getItem("update-photos-ms")) || DEFAULT_UPDATE_MS;
 
-    var changePhotosLoop = $.throttle(5 * 1000, function() {
+    var changePhotosLoop = $.throttle(change_photos_ms, function() {
         pt.next();
         //console.log("next");
     });
 
-    var updatePhotosLoop = $.throttle(5 * 100 * 1000, function() {
+    var updatePhotosLoop = $.throttle(update_photos_ms, function() {
         updatePhotos(tag, function() {
             //debugger;
             //console.log("Photos updated");

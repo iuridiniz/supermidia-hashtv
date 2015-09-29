@@ -68,14 +68,58 @@
         </div>
       </div>
       <div id="toolbar">
-        <button id="settings" type="button" class='btn btn-default'>
+        <button id="settings" type="button" class='btn btn-default' data-toggle="modal" data-target="#settings-dialog">
           <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
         </button>
         <button id="fullscreen" type="button" class='btn btn-default'>
           <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
         </button>
       </div>
-      <div id="container" class="pt-perspective"></div>
+      <div id="pt-container" class="pt-perspective"></div>
+      <div class="container">
+        <div class="modal animated rotateInDownLeft" id="settings-dialog" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Settings</h4>
+                <div id="alert-not-auth" class="alert alert-danger" role="alert">
+                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                  <span class="sr-only">Not authorized:</span>
+                  <button id="auth-button" type="button" class="btn btn-link"> Please authorize this app on instagram </button>
+                </div>
+              </div>
+              <div class="modal-body">
+                <form class="form-horizontal">
+                  <div class="form-group">
+                    <label for="hashtag" class="col-sm-4 control-label">Hashtag: </label>
+                    <div class="col-sm-8">
+                      <input id="hashtag" type="text" class="form-control" placeholder="HashMediaBR"/>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="update-photos-ms" class="col-sm-4 control-label">Update photos every (miliseconds):</label>
+                    <div class="col-sm-8">
+                      <input id="update-photos-ms" type="text" class="form-control" placeholder="2000"/>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="change-photos-ms" class="col-sm-4 control-label">Change photo every: (miliseconds)</label>
+                    <div class="col-sm-8">
+                      <input id="change-photos-ms" type="text" class="form-control" placeholder="200000"/>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button id="save" type="button" class="btn btn-success" data-dismiss="modal">Close and Save</button>
+                <button id="reset" type="button" class="btn btn-danger" data-dismiss="modal">Reset to defaults</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
   <!-- dependencies -->
