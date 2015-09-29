@@ -140,9 +140,9 @@ var loadNewPics = function (urls, onLoadOne, onLoadAll) {
     });
 };
 
-var DEFAULT_HASHTAG="HashMediaBR";
-var DEFAULT_UPDATE_MS=5 * 100 * 1000;
-var DEFAULT_CHANGE_MS=5 * 1000;
+var DEFAULT_HASHTAG = "Snow";
+var DEFAULT_UPDATE_MS = 5 * 100 * 1000;
+var DEFAULT_CHANGE_MS = 5 * 1000;
 
 /* make they global */
 var instagram;
@@ -359,7 +359,7 @@ $(document).on('ready', function(){
             console.warn("Error while updating photos: " + code);
             if (code === 400) {
                 /* Unauthorized */
-                //instagram.deauthenticate();
+                instagram.deauthenticate();
                 //location.reload();
             }
         });
