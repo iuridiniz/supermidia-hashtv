@@ -16,22 +16,19 @@ In order to run, all you need is a browser.
 
 Clone this repo
 
-```
-#!bash
-
+```bash
 git clone git@github.com:iuridiniz/supermidia-hashtv.git hashtv
 cd hashtv
 ```
 
 Bootstrap the project
 
-```
-#!bash
+```bash
 ./bootstrap.sh
 ```
 
 Run it
-```
-#!bash
+
+```bash
 ./serve.sh
 ```
