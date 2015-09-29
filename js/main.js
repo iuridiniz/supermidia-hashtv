@@ -242,10 +242,6 @@ $(document).on('ready', function(){
     $("#auth-button").on('click', function(){
          window.location=instagram.authUrl;
     });
-    /* config deauthorize button */
-    $("#deauth-button").on('click', function(){
-         instagram.deauthenticate();
-    });
 
     /* config reset button */
     $("#settings-dialog #reset").on('click', function() {
