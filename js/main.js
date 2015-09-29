@@ -359,7 +359,7 @@ $(document).on('ready', function(){
             console.warn("Error while updating photos: " + code);
             if (code === 400) {
                 /* Unauthorized */
-                //instagram.deauthenticate();
+                instagram.deauthenticate();
                 //location.reload();
             }
         });
