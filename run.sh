@@ -1,3 +1,6 @@
-#!/bin/sh
-exec "/home/iuri/Sources/hashmediabr/nw/nw" "/home/iuri/Sources/hashmediabr" $*
+#!/bin/bash
+
+BASEDIR=$( (cd -P "`dirname "$0"`" && pwd) )
+
+exec "${BASEDIR}/nw/nw" "${BASEDIR}" $*
 
