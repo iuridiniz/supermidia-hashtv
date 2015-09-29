@@ -2,7 +2,7 @@
 
 BASEDIR=$( (cd -P "`dirname "$0"`" && pwd) )
 
-PORT=8082
+PORT=${1:-8082}
 
 KERNEL=$(uname -s)
 
