@@ -147,7 +147,7 @@ var pt;
 var interval;
 
 $(document).on('ready', function(){
-    pt = new PageTransition("#container")
+    pt = new PageTransition("#pt-container")
     appuri = URI(document.URL);
     instagram = Instajam.init({
         clientId: 'e0c943c7ee9c444db995a8688979e078',
