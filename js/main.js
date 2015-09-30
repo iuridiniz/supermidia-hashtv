@@ -260,6 +260,7 @@ $(document).on('ready', function(){
         location.reload();
     });
 
+    /* config save button */
     $("#settings-dialog #save").on('click', function() {
         if ($("#hashtag").val()) {
             localStorage.setItem("hashtag", $("#hashtag").val());
