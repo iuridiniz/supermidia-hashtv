@@ -300,7 +300,8 @@ $(document).on('ready', function(){
             }, function(imgs) {
                 /* all loaded, update container */
                 var saved_classes = pt.$container.attr('class');
-                pt.$container.addClass('animated rotateOut');
+                var animated = 'animated rotateOut';
+                pt.$container.addClass(animated);
                 var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
                 pt.$container.one(events, function() {
                     /* some browsers send two events like chrome (webkitAnimationEnd and animationend) */
@@ -315,6 +316,8 @@ $(document).on('ready', function(){
                     });
 
                     pt.$container.attr('class', saved_classes);
+                    /* make sure animated classes were removed */
+                    pt.$container.removeClass(animated);
                     $progressBarContainer.hide();
                     pt.reload();
 
