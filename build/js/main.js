@@ -140,7 +140,7 @@ var loadNewPics = function (urls, onLoadOne, onLoadAll) {
     });
 };
 
-var DEFAULT_HASHTAG = "Snow";
+var DEFAULT_HASHTAG = "AninhaEHermes";
 var DEFAULT_UPDATE_MS = 5 * 100 * 1000;
 var DEFAULT_CHANGE_MS = 5 * 1000;
 
