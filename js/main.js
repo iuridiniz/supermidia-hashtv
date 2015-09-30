@@ -141,10 +141,11 @@ var loadNewPics = function (urls, onLoadOne, onLoadAll) {
 };
 
 var DEFAULT_HASHTAG = "Snow";
-var DEFAULT_UPDATE_MS = 5 * 100 * 1000;
-var DEFAULT_CHANGE_MS = 5 * 1000;
 var DEFAULT_MAX_PHOTOS = 20;
 var LIMIT_MAX_PHOTOS = 33;
+var DEFAULT_CHANGE_MS = 3 * 1000;
+/* default is each photo showing twice */
+var DEFAULT_UPDATE_MS = DEFAULT_MAX_PHOTOS * DEFAULT_CHANGE_MS * 2;
 
 /* make they global */
 var instagram;
