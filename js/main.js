@@ -102,8 +102,8 @@ var PageTransition = (function ($) {
 })(jQuery);
 
 /* request tags */
-var getPhotosUrls = function(tag, onSuccess, onError) {
-    instagram.tag.media(tag, function(response) {
+var getPhotosUrls = function(tag, count, onSuccess, onError) {
+    instagram.tag.media(tag, {'count': count}, function(response) {
         if (! response.data) {
             if (onError && typeof(onError) === 'function') {
                 //console.log("No data: ", response);
@@ -156,8 +156,11 @@ var loadNewPics = function (urls, onLoadOne, onLoadAll) {
 };
 
 var DEFAULT_HASHTAG = "Snow";
-var DEFAULT_UPDATE_MS = 5 * 100 * 1000;
-var DEFAULT_CHANGE_MS = 5 * 1000;
+var DEFAULT_MAX_PHOTOS = 20;
+var LIMIT_MAX_PHOTOS = 33;
+var DEFAULT_CHANGE_MS = 3 * 1000;
+/* default is each photo showing twice */
+var DEFAULT_UPDATE_MS = DEFAULT_MAX_PHOTOS * DEFAULT_CHANGE_MS * 2;
 
 /* make they global */
 var instagram;
@@ -229,6 +232,12 @@ $(document).on('ready', function(){
         $("#change-photos-ms")
             .attr("value", localStorage.getItem("change-photos-ms"))
             .attr("placeholder", DEFAULT_CHANGE_MS);
+        $("#max-photos")
+            .attr("value", localStorage.getItem("max-photos"))
+            .attr("placeholder", DEFAULT_MAX_PHOTOS);
+
+        $("#max-photos-limit").text(LIMIT_MAX_PHOTOS);
+
         if (!instagram.authenticated) {
             console.log("Not authorized");
             var qs = appuri.query(true);
@@ -251,9 +260,11 @@ $(document).on('ready', function(){
         localStorage.removeItem("hashtag");
         localStorage.removeItem("update-photos-ms");
         localStorage.removeItem("change-photos-ms");
+        localStorage.removeItem("max-photos");
         location.reload();
     });
 
+    /* config save button */
     $("#settings-dialog #save").on('click', function() {
         if ($("#hashtag").val()) {
             localStorage.setItem("hashtag", $("#hashtag").val());
@@ -273,11 +284,17 @@ $(document).on('ready', function(){
             localStorage.removeItem("change-photos-ms");
         }
 
+        if ($("#max-photos").val()) {
+            var val = $("#max-photos").val();
+            localStorage.setItem("max-photos", val>LIMIT_MAX_PHOTOS?LIMIT_MAX_PHOTOS:val);
+        } else {
+            localStorage.removeItem("max-photos");
+        }
         location.reload();
     });
 
-    var updatePhotos = function(tag, onDone, onError) {
-        getPhotosUrls(tag, function(urls) {
+    var updatePhotos = function(tag, count, onDone, onError) {
+        getPhotosUrls(tag, count, function(urls) {
             //console.log("success getPhotoUrls", data);
             var $progressBarContainer = $("#progress-bar-container");
             var $progressBar= $("#progress-bar");
@@ -303,7 +320,8 @@ $(document).on('ready', function(){
             }, function(imgs) {
                 /* all loaded, update container */
                 var saved_classes = pt.$container.attr('class');
-                pt.$container.addClass('animated rotateOut');
+                var animated = 'animated rotateOut';
+                pt.$container.addClass(animated);
                 var events = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
                 pt.$container.one(events, function() {
                     /* some browsers send two events like chrome (webkitAnimationEnd and animationend) */
@@ -318,6 +336,8 @@ $(document).on('ready', function(){
                     });
 
                     pt.$container.attr('class', saved_classes);
+                    /* make sure animated classes were removed */
+                    pt.$container.removeClass(animated);
                     $progressBarContainer.hide();
                     pt.reload();
 
@@ -344,6 +364,10 @@ $(document).on('ready', function(){
     var tag = localStorage.getItem("hashtag") || DEFAULT_HASHTAG;
     var change_photos_ms = Number(localStorage.getItem("change-photos-ms")) || DEFAULT_CHANGE_MS;
     var update_photos_ms = Number(localStorage.getItem("update-photos-ms")) || DEFAULT_UPDATE_MS;
+    var max_photos = Number(localStorage.getItem("max-photos")) || DEFAULT_MAX_PHOTOS;
+
+    /* verify the limit */
+    max_photos = max_photos>LIMIT_MAX_PHOTOS?LIMIT_MAX_PHOTOS:max_photos;
 
     var changePhotosLoop = $.throttle(change_photos_ms, function() {
         pt.next();
@@ -351,7 +375,7 @@ $(document).on('ready', function(){
     });
 
     var updatePhotosLoop = $.throttle(update_photos_ms, function() {
-        updatePhotos(tag, function() {
+        updatePhotos(tag, max_photos, function() {
             //debugger;
             //console.log("Photos updated");
         }, function(code) {
