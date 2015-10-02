@@ -2,6 +2,21 @@
 /* global Instajam */
 /// <reference path="../typings/jquery/jquery.d.ts"/>
 
+var fullscreenEnabled = (document.fullscreenEnabled ||
+                         document.webkitFullscreenEnabled ||
+                         document.mozFullScreenEnabled ||
+                         document.msFullscreenEnabled);
+
+var fullscreenElement = (document.fullscreenElement ||
+                         document.webkitFullscreenElement ||
+                         document.mozFullScreenElement ||
+                         document.msFullscreenElement);
+
+var exitFullscreen = (document.exitFullscreen ||
+                      document.webkitExitFullscreen ||
+                      document.mozCancelFullScreen ||
+                      document.msExitFullscreen);
+
 var PageTransition = (function ($) {
     'use strict';
 
@@ -171,48 +186,36 @@ $(document).on('ready', function(){
     }));
 
     /* fullscreen */
-    if (document.fullscreenEnabled ||
-        document.webkitFullscreenEnabled ||
-        document.mozFullScreenEnabled ||
-        document.msFullscreenEnabled) {
-
-        $("#fullscreen")
-            .show()
-            .on("click", function() {
-                /* is in fullscreen */
-                if (document.fullscreenElement ||
-                    document.webkitFullscreenElement ||
-                    document.mozFullScreenElement ||
-                    document.msFullscreenElement
-                ){
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    } else {
-                        console.error("Unable to exit fullscreen");
-                    }
+    if (fullscreenEnabled) {
+        $("#fullscreen").show().on("click", function() {
+            if (fullscreenElement){
+                /* is in fullscreen, exit */
+                if(exitFullscreen) {
+                    exitFullscreen();
                 } else {
-                    /* enter fullscreen */
-                    var i = $("#app")[0];
-                    // go full-screen
-                    if (i.requestFullscreen) {
-                        i.requestFullscreen();
-                    } else if (i.webkitRequestFullscreen) {
-                        i.webkitRequestFullscreen();
-                    } else if (i.mozRequestFullScreen) {
-                        i.mozRequestFullScreen();
-                    } else if (i.msRequestFullscreen) {
-                        i.msRequestFullscreen();
-                    } else {
-                        console.error("Unable to enter in fullscreen");
-                    }
+                    console.error("Unable to exit fullscreen");
                 }
-            });
+            } else {
+                /* not in fullscreen, enter
+
+                   requestFullscreen() is deprecated on insecure origins,
+                   and support will be removed in the future. Consider using
+                   HTTPS.
+                 */
+                var i = $("#app")[0];
+                if (i.requestFullscreen) {
+                    i.requestFullscreen();
+                } else if (i.webkitRequestFullscreen) {
+                    i.webkitRequestFullscreen();
+                } else if (i.mozRequestFullScreen) {
+                    i.mozRequestFullScreen();
+                } else if (i.msRequestFullscreen) {
+                    i.msRequestFullscreen();
+                } else {
+                    console.error("Unable to enter in fullscreen");
+                }
+            }
+        });
     }
 
     /* modal settings */
