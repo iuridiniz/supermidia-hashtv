@@ -6,12 +6,6 @@ var fullscreenEnabled = (document.fullscreenEnabled ||
                          document.webkitFullscreenEnabled ||
                          document.mozFullScreenEnabled ||
                          document.msFullscreenEnabled);
-
-var fullscreenElement = (document.fullscreenElement ||
-                         document.webkitFullscreenElement ||
-                         document.mozFullScreenElement ||
-                         document.msFullscreenElement);
-
 var exitFullscreen = (document.exitFullscreen ||
                       document.webkitExitFullscreen ||
                       document.mozCancelFullScreen ||
@@ -191,10 +185,16 @@ $(document).on('ready', function(){
     /* fullscreen */
     if (fullscreenEnabled) {
         $("#fullscreen").show().on("click", function() {
+
+            var fullscreenElement = (document.fullscreenElement ||
+                         document.webkitFullscreenElement ||
+                         document.mozFullScreenElement ||
+                         document.msFullscreenElement);
+
             if (fullscreenElement){
                 /* is in fullscreen, exit */
                 if(exitFullscreen) {
-                    exitFullscreen();
+                    exitFullscreen.call(document);
                 } else {
                     console.error("Unable to exit fullscreen");
                 }
